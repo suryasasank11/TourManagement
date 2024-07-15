@@ -14,7 +14,7 @@ const Booking = ({tour,avgRating}) => {
     const [booking,setBooking]=useState({
         userId: user && user._id,
         userEmail:user && user.email,
-        tourName:title,
+        tourName:tour.title,
         fullName:'',
         phone:'',
         guestSize:1,

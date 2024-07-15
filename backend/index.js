@@ -24,10 +24,10 @@ mongoose.set("strictQuery",false);
 
 const connect = async()=>{
     try {
-        await mongoose.connect(process.env.MONGO_URI) 
+        await mongoose.connect(`${process.env.MONGO_URI}/tours_booking`) 
         console.log('MongoDb Database Connected');
     } catch (err) {
-            console.log('MonogoDB database connection failed')
+        console.log('MonogoDB database connection failed')
     }
 }
 
