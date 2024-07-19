@@ -30,12 +30,12 @@ const handleClick = async e=>{
     const res = await fetch(`${BASE_URL}/auth/login`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(credentials)
+      body:JSON.stringify(credentials),
+      credentials: 'include', 
       })
-      const result = await res.json()
+      const result = await res.json() 
       if(!res.ok) alert(result.message)
-
-        dispatch({type:'LOGIN_SUCCESS',payload:result.data})
+        dispatch({type:"LOGIN_SUCCESS",payload:result.data})
         navigate('/')
   }catch(err){
     dispatch({type:'LOGIN_FAILURE',payload:err.response.data})
@@ -69,7 +69,7 @@ const handleClick = async e=>{
                       <input type="password" placeholder='Password' required id='password'
                       onChange={handleChange}/>
                     </FormGroup>
-                    <Button className='btn secondary_btn auth_btn'>Login</Button>
+                    <Button className='btn secondary_btn auth_btn' onSubmit={handleClick}>Login</Button>
                     <p>Don't have an account? <Link to='/register'>Create one!</Link></p>
                 </Form>
               </div>

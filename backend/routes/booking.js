@@ -1,45 +1,49 @@
-const express=require('express')
-const Tour=require('../models/Tour.js')
-const {verifyUser,verifyAdmin} =require('../utils/verifyToken.js')
-const router=express.Router()
+const express = require('express');
+const Booking = require('../models/Booking.js');  // Ensure you import the correct Booking model
+const { verifyUser, verifyAdmin } = require('../utils/verifyToken.js');
+const router = express.Router();
 
-router.post('/:id',verifyUser,async (req,res)=>{
-   const newBooking= new Booking(req.body)
-    try{
-        const savedBooking = await newBooking.save()
-        res.status(200).json({success:true,message:"Your tour is booked",data:savedBooking})
-    }catch(err){
-        res.status(200).json({success:true,message:"internal server error"})
+// Create a new booking
+router.post('/', verifyUser, async (req, res) => {
+    const newBooking = new Booking(req.body);
+    try {
+        const savedBooking = await newBooking.save();
+        res.status(200).json({ success: true, message: "Your tour is booked", data: savedBooking });
+    } catch (err) {
+        res.status(500).json({ success: false, message: "Internal server error" });  // Correct status code and success flag
     }
-})
+});
 
-//get single booking
-router.get('/:id',verifyUser,async (req,res)=>{
+// Get single booking
+router.get('/:id', verifyUser, async (req, res) => {
     const id = req.params.id;
-    try{
+    try {
         const book = await Booking.findById(id);
+        if (!book) {
+            return res.status(404).json({ success: false, message: 'Booking not found' });
+        }
         res.status(200).json({
-            success:true,
-            message:"Successful",
-            data:book})
-    }catch(err){
-        res.status(404).json({success:true,message:'not found'})       
+            success: true,
+            message: "Successful",
+            data: book
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Internal server error' });  // Correct status code and success flag
     }
-})
+});
 
-
-//get all bookings
-router.get('/:id',verifyAdmin,async (req,res)=>{
-    try{
+// Get all bookings
+router.get('/', verifyAdmin, async (req, res) => {  // Changed endpoint to avoid conflict
+    try {
         const books = await Booking.find();
         res.status(200).json({
-            success:true,
-            message:"Successful",
-            data:books})
-    }catch(err){
-        res.status(500).json({success:true,message:'intetnal server error'})       
+            success: true,
+            message: "Successful",
+            data: books
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Internal server error' });  // Correct status code and success flag
     }
-})
+});
 
-
-module.exports=router
+module.exports = router;

@@ -9,9 +9,9 @@ import { BASE_URL } from './../utils/config';
 
 const Register = () => {
   const [credentials, setCredentials] = useState({
-    username: '',
-    email: '',
-    password: ''
+    username:undefined ,
+    email: undefined,
+    password: undefined 
   });
 
   const { dispatch } = useContext(AuthContext);
@@ -27,7 +27,7 @@ const Register = () => {
       const res = await fetch(`${BASE_URL}/auth/register`, {
         method: 'post',
         headers: {
-          'Content-Type': 'application/json'
+          'content-Type': 'application/json'
         },
         body: JSON.stringify(credentials)
       });

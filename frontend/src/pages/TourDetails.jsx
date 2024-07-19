@@ -10,13 +10,13 @@ import useFetch from './../hooks/useFetch.js';
 import { AuthContext } from './../context/AuthContext.js';
 
 const TourDetails = () => {
-  const { _id } = useParams();
+  const { id } = useParams();
   const reviewMsgRef = useRef('');
   const [tourRating, setTourRating] = useState(null);
   const { user } = useContext(AuthContext);
 
   // Fetch data from database
-  const { data: tour, loading, error } = useFetch(`${BASE_URL}/tours/${_id}`);
+  const { data: tour, loading, error } = useFetch(`${BASE_URL}/tours/${id}`);
   // Destructure properties
   const { photo, title, desc, price, address, reviews, city, distance, maxGroupSize } = tour || {};
 
@@ -34,13 +34,13 @@ const TourDetails = () => {
       }
       const reviewObj = {
         username: user?.username,
-        review: reviewText,
+        reviewText,
         rating: tourRating,
       };
 
-      const res = await fetch(`${BASE_URL}/review/${_id}`, {
+      const res = await fetch(`${BASE_URL}/review/${id}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify(reviewObj),
       });
@@ -112,21 +112,15 @@ const TourDetails = () => {
                   <h4>Reviews ({reviews?.length} reviews)</h4>
                   <Form onSubmit={submitHandler}>
                     <div className="d-flex align-items-center gap-3 mb-4 review_group">
-                      <span onClick={() => setTourRating(1)}>
-                        1 <i className="ri-star-s-fill"></i>
-                      </span>
-                      <span onClick={() => setTourRating(2)}>
-                        2 <i className="ri-star-s-fill"></i>
-                      </span>
-                      <span onClick={() => setTourRating(3)}>
-                        3 <i className="ri-star-s-fill"></i>
-                      </span>
-                      <span onClick={() => setTourRating(4)}>
-                        4 <i className="ri-star-s-fill"></i>
-                      </span>
-                      <span onClick={() => setTourRating(5)}>
-                        5 <i className="ri-star-s-fill"></i>
-                      </span>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                          key={star}
+                          onClick={() => setTourRating(star)}
+                          style={{ cursor: 'pointer', color: tourRating >= star ? 'gold' : 'gray' }}
+                        >
+                          {star} <i className="ri-star-s-fill"></i>
+                        </span>
+                      ))}
                     </div>
                     <div className="review_input">
                       <input type="text" ref={reviewMsgRef} placeholder="Share your thoughts" required />
@@ -143,7 +137,7 @@ const TourDetails = () => {
                           <div className="d-flex align-items-center justify-content-between">
                             <div>
                               <h5>{review.username}</h5>
-                              <p>{new Date(review.date).toLocaleDateString('en-US', options)}</p>
+                              <p>{new Date(review.createdAt).toLocaleDateString('en-US', options)}</p>
                             </div>
                             <span className="d-flex align-items-center">
                               {review.rating}

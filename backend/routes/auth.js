@@ -33,59 +33,60 @@ router.post('/register',async (req,res)=>{
 
 })
 
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
 
-router.post('/login',async (req,res)=>{
-    
-    const email = req.body.email
-    
-    try{
-        const user= await User.findOne({email})
-        //if user doesnt exist
-        if(!user){
+    try {
+        const user = await User.findOne({ email });
+
+        // If user doesn't exist
+        if (!user) {
             return res.status(400).json({
-                success:false,
-                message:'User not found'
-                })
-        }
-       
-        //if user exists then check the password or comapre the password
-        const checkCorrectPassword= await bcrypt.compare(req.body.password,user.password)
-         console.log( bcrypt.compareSync(req.body.password,user.password));
-             
-        if(!checkCorrectPassword){
-            return res.status(400).json({
-                success:false,
-                message:'Incorrect email or password'
-            })
+                success: false,
+                message: 'User not found',
+            });
         }
 
-        const {password, role, ...rest} = user._doc
+        // Compare the password
+        const checkCorrectPassword = await bcrypt.compare(password, user.password);
+        if (!checkCorrectPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Incorrect email or password',
+            });
+        }
 
-        //create jwt token
+        const { password: userPassword, role, ...rest } = user._doc;
+
+        // Create JWT token
         const token = jwt.sign(
-            {id:user._id,role: user.role},
+            { id: user._id, role: user.role },
             process.env.JWT_SECRET_KEY,
-            {expiresIn : "15d"}
-        )
+            { expiresIn: '15d' }
+        );
 
-        //set token in the browser cookies and send the response to the client
-        res.cookie('accessToken',token,{
-            httpOnly:true,
-            expires:token.expiresIn
-        }).status(200).json({
-            success:true,
-            message:'successfully login',
+        // Set token in the browser cookies and send the response to the client
+        res.cookie('accessToken', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Ensure secure cookie in production
+            sameSite: 'Strict', // CSRF protection
+            expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // Set cookie expiration to match token expiration (15 days)
+        });
+        
+        res.status(200).json({
+            success: true,
+            message: 'Successfully logged in',
             token,
-            data:{...rest},
-            role
-        })
-    }catch(err){
+            data: { ...rest },
+            role,
+        });
+    } catch (err) {
+        console.error(err);
         return res.status(400).json({
-            success:false,
-            message:'Incorrect email or password'
-        })
+            success: false,
+            message: 'Login failed. Please try again.',
+        });
     }
 })
-
 
 module.exports = router
