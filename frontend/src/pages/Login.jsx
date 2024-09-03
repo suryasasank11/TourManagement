@@ -34,6 +34,7 @@ const handleClick = async e=>{
       credentials: 'include', 
       })
       const result = await res.json() 
+      console.log(result)
       if(!res.ok) alert(result.message)
         dispatch({type:"LOGIN_SUCCESS",payload:result.data})
         navigate('/')

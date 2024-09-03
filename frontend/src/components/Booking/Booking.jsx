@@ -46,7 +46,7 @@ const Booking = ({ tour, avgRating }) => {
             });
 
             const result = await res.json();
-
+            console.log(result)
             if (!res.ok) {
                 return alert(result.message);
             }

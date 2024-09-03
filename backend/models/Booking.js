@@ -18,15 +18,15 @@ const bookingSchema = new mongoose.Schema(
     },
     guestSize:{
         type: Number,
-        required:true
+        required:true,
     },
     phone:{
         type: Number,
-        reqired:true
+        reqired:true,
     },
     bookAt:{
-        type:Number,
-        required:true
+        type:Date,
+        reqired:true,
     }
   },
   { timestamps: true }
